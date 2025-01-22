@@ -1,8 +1,10 @@
 # requirements.txt
-langchain
-openai
 faiss-cpu
-langchain-openai 
 langgraph 
-langchain-community
 flask
+flask-cors
+python-dotenv
+langchain-chroma
+langchain-ollama
+langchain-community
+langchain

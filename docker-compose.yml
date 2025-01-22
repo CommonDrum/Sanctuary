@@ -1,25 +1,13 @@
 services:
-  backend:
-    build: ./backend
+  ollama:
+    image: ollama/ollama
+    container_name: ollamaa
     ports:
-      - "5000:5000"
-    volumes:
-      - ./backend:/app
-      - chroma_data:/app/chroma_data
-    environment:
-      - FLASK_ENV=development
-      - FLASK_APP=app.py
-      - FLASK_DEBUG=1
-    
-  frontend:
-    build: ./frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-
-volumes:
-  chroma_data:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -1,9 +1,9 @@
 services:
   ollama:
     image: ollama/ollama
-    container_name: ollamaa
+    container_name: ollama
     ports:
-      - "8000:8000"
+      - "11434:11434"
     deploy:
       resources:
         reservations:
@@ -11,3 +11,22 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    networks:
+    - ollama-network
+    
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/db
+    networks:
+      - ollama-network
+
+volumes:
+  db:
+
+networks:
+  ollama-network:
+    driver: bridge

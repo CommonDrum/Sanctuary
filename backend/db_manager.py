@@ -6,3 +6,8 @@
 
 #Use the chroma module separate from langchain
 #https://docs.trychroma.com/docs/overview/getting-started
+
+
+import chromadb
+
+chroma_client = chromadb.Client()

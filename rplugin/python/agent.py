@@ -7,15 +7,13 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_ollama.llms import OllamaLLM
 from dataclasses import dataclass
 
-import requests
-
 from template import SOCIAL_MEDIA_TEMPLATE
 
 #TODO: Write docs!
 @dataclass
 class AgentConfig:
     model_name: str = "llama3.2:3b"
-    base_url: str = "http://ollama:11434"
+    base_url: str = "http://localhost:11434"
     chunk_size: int = 1000
     chunk_overlap: int = 200
 
@@ -29,20 +27,20 @@ class Agent:
                args:
                     template: ChatPromptTemplate
                     model_name: str
-               This 
+                    host_url: str
      """
-     def __init__(self, template, persist_dir="./db/chroma_db", model_name="llama3.2:3b"):
+     def __init__(self, template, model_name="llama3.2:3b", host_url="http://localhost:11434"):
 
-          self.presist_dir = persist_dir
           self.config = AgentConfig()          
           
           self.model_name = model_name
           self.embeddings = OllamaEmbeddings(model=self.model_name)
+          #TODO: Check how to change URL for hosting
           self.llm = OllamaLLM(
                model=self.model_name,
                )
           
-          self.vector_store = Chroma(embedding_function=self.embeddings, persist_directory=self.presist_dir) 
+          self.vector_store = Chroma(embedding_function=self.embeddings) 
           self.prompt = template
           self.State = State
          
@@ -76,42 +74,7 @@ class Agent:
           return response["answer"]
 
 
-
 if __name__ == "__main__":
-     import requests
-     import json
-     import time
-
-     def pull_model():
-          url = "http://ollama:11434/api/pull"
-          payload = {
-               "model": "llama3.2:3b"
-          }
-          
-          print("Initializing model...")
-          response = requests.post(url, json=payload)
-          return response.status_code == 200
-
-     def generate_text(prompt):
-          url = "http://ollama:11434/api/generate"
-          payload = {
-               "model": "llama3.2:3b",
-               "prompt": prompt
-          }
-          
-          response = requests.post(url, json=payload)
-          return response
-     
-     while True:
-            try:
-               if pull_model():
-                    print(generate_text("Hello, world!"))
-                    print("Model initialized!")
-                    agent = Agent(SOCIAL_MEDIA_TEMPLATE)
-                    print(agent.ask_question("Hello, world!"))
-                    break
-               else:
-                    time.sleep(500)
-            except requests.exceptions.ConnectionError:
-               time.sleep(1)
-        
+     agent = Agent(SOCIAL_MEDIA_TEMPLATE)
+     response = agent.ask_question("What is going on?")
+     print(response)

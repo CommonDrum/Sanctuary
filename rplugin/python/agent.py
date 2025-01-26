@@ -47,16 +47,14 @@ class Agent:
           self.prompt = template
           self.State = State
 
-          docs = self.load_directory("./rplugin/python/")
+          docs = self.load_python_files("./rplugin/python/")
 
           text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
           all_splits = text_splitter.split_documents(docs)
 
           _ = self.vector_store.add_documents(documents=all_splits)
 
-          #This loads ALL files form dir
-          #TODO: make filtered version
-     def load_directory(self, dir: str):
+     def load_python_files(self, dir: str):
           # Verify path
           abs_path = os.path.abspath(dir)
           print(f"Loading from: {abs_path}")

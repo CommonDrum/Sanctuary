@@ -2,11 +2,14 @@ from langchain_core.documents import Document
 from langgraph.graph import START, END, StateGraph
 from typing_extensions import List, TypedDict
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 from langchain_ollama.llms import OllamaLLM
-from dataclasses import dataclass
+from langchain_core.vectorstores import InMemoryVectorStore
+from langchain_community.document_loaders import DirectoryLoader, PythonLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from dataclasses import dataclass
+import os
 from template import SOCIAL_MEDIA_TEMPLATE
 
 #TODO: Write docs!
@@ -40,10 +43,37 @@ class Agent:
                model=self.model_name,
                )
           
-          self.vector_store = Chroma(embedding_function=self.embeddings) 
+          self.vector_store = InMemoryVectorStore(self.embeddings) 
           self.prompt = template
           self.State = State
-         
+
+          docs = self.load_directory("./rplugin/python/")
+
+          text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+          all_splits = text_splitter.split_documents(docs)
+
+          _ = self.vector_store.add_documents(documents=all_splits)
+
+          #This loads ALL files form dir
+          #TODO: make filtered version
+     def load_directory(self, dir: str):
+          # Verify path
+          abs_path = os.path.abspath(dir)
+          print(f"Loading from: {abs_path}")
+          print(f"Directory exists: {os.path.exists(abs_path)}")
+          print(f"Files found: {[f for f in os.listdir(abs_path) if f.endswith('.py')]}")
+          
+          loader = DirectoryLoader(
+               dir,
+               glob="**/*.py",
+               exclude=["**/__pycache__"],
+               use_multithreading=True,
+               show_progress=True,
+               silent_errors=True,
+               loader_cls=PythonLoader
+          )
+          return loader.load()
+               
      def retrieve(self, state: TypedDict):
           retrieved_docs = self.vector_store.similarity_search(state["question"])
           return {"context": retrieved_docs}
@@ -53,7 +83,7 @@ class Agent:
           messages = self.prompt.invoke({"question": state["question"], "context": docs_content})
           response = self.llm.invoke(messages)
           return {"answer": response}
-     
+               
      def create_graph(self):
           graph_builder = StateGraph(self.State)
           
@@ -76,5 +106,5 @@ class Agent:
 
 if __name__ == "__main__":
      agent = Agent(SOCIAL_MEDIA_TEMPLATE)
-     response = agent.ask_question("What is going on?")
+     response = agent.ask_question("What is agent class?")
      print(response)

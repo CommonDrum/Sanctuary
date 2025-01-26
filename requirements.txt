@@ -1,13 +1,8 @@
 # requirements.txt
 langgraph 
-langchain-chroma
 langchain-ollama
 langchain-community
 langchain
-requests
-fastapi
 pydantic
-uvicorn
 faiss-cpu
-python-dotenv
 chromadb

@@ -1,23 +1,14 @@
--- C:/Users/Karol/Dev/Sanctuary/lua/sanctuary.lua
+local config = {}
 
-local M = {}
-
-function M.setup()
-    -- This function gets called when your plugin loads
-    -- We can add any Lua-side initialization here
-    
-    -- Register our commands in a way that works with Neovim
-    vim.api.nvim_create_user_command('StartChatVertical', function()
-        -- This ensures the Python command is available
-        vim.cmd('StartChatVertical')
-    end, {})
-
-    vim.api.nvim_create_user_command('StartChatHorizontal', function()
-        vim.cmd('StartChatHorizontal')
-    end, {})
-
-    -- Let users know the plugin is ready
-    vim.notify("Sanctuary chat plugin initialized!", vim.log.levels.INFO)
+local function setup(cfg)
+    config = cfg
+    -- Add a basic keymap to trigger our sanctuary command
+    vim.keymap.set('n', '<Leader>s', ':call SanctuaryHello()<CR>', { silent = true })
 end
 
-return M
+-- This function will be called from Python to get config
+local function getConfig()
+    return config
+end
+
+return { setup = setup, getConfig = getConfig }

@@ -10,7 +10,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from dataclasses import dataclass
 import os
-from template import SOCIAL_MEDIA_TEMPLATE
+from .template import SOCIAL_MEDIA_TEMPLATE
 
 #TODO: Write docs!
 @dataclass

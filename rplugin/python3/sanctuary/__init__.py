@@ -1,4 +1,5 @@
 import pynvim
+from .agent import Agent
 
 @pynvim.plugin
 class SanctuaryPlugin(object):
@@ -7,14 +8,16 @@ class SanctuaryPlugin(object):
         self.cfg = nvim.exec_lua('return require("sanctuary").getConfig()')
         self.prompt = ">>> "
         self.input_line = ""
+        self.agent = Agent()
 
-    @pynvim.command('Vbuffer', nargs='0', sync=True)
+    @pynvim.command('Vsanct', nargs='0', sync=True)
     def create_vertical_buffer(self, args):
         # Create vertical split
         self.nvim.command('vnew')
         buffer = self.nvim.current.buffer
         
         # Set buffer options
+        self.nvim.command('setlocal wrap')
         self.nvim.command('setlocal buftype=nofile')
         self.nvim.command('setlocal nonumber')
         self.nvim.command('setlocal noswapfile')
@@ -37,32 +40,20 @@ class SanctuaryPlugin(object):
     @pynvim.function('ProcessSanctuaryInput')
     def process_input(self, args):
         buffer = self.nvim.current.buffer
-        # Get the last line (user input)
         last_line = buffer[-1]
         
         if last_line.startswith(self.prompt):
-            # Extract user input (remove prompt)
             user_input = last_line[len(self.prompt):]
             
-            # Process the input and get response
             response = self.handle_input(user_input)
             
-            # Add response and new prompt
             buffer.append(response)
             buffer.append(self.prompt)
             
-            # Move cursor to the end
             self.nvim.command('normal! G$')
             self.nvim.command('startinsert!')
 
     def handle_input(self, input_text):
-        # Basic command handling - you can expand this
-        if input_text.lower() == 'hello':
-            return "Hello there!"
-        elif input_text.lower() == 'help':
-            return "Available commands: hello, help, quit"
-        elif input_text.lower() == 'quit':
-            self.nvim.command('quit')
-            return ""
-        else:
-            return f"You said: {input_text}"
+        response = self.agent.ask_question(input_text)
+        lines = response.split('\n')
+        return lines

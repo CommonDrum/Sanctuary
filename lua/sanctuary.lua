@@ -1,14 +1,21 @@
-local config = {}
+-- Store configuration in a local table with default values
+local config = {
+    greeting = "Default greeting from Sanctuary!"
+}
 
-local function setup(cfg)
-    config = cfg
-    -- Add a basic keymap to trigger our sanctuary command
-    vim.keymap.set('n', '<Leader>s', ':call SanctuaryHello()<CR>', { silent = true })
+-- Setup function that users will call from their init.lua/init.vim
+local function setup(user_config)
+    config = vim.tbl_extend("force", config, user_config or {})
 end
 
--- This function will be called from Python to get config
+-- This function allows our Python code to access the configuration
 local function getConfig()
     return config
 end
 
-return { setup = setup, getConfig = getConfig }
+-- Export our functions
+return {
+    setup = setup,
+    getConfig = getConfig,
+    echo_buffer = echo_buffer
+}

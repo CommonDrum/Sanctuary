@@ -16,9 +16,7 @@ from enum import Enum
 
 """
 TODO:
-
 - add chat history
-- create documentation
 - add deepseek init for the class
 - add config file
 - Loading documentation from URL

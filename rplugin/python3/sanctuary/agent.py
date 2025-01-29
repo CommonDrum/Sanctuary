@@ -7,7 +7,6 @@ from langchain_ollama.llms import OllamaLLM
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_community.document_loaders import DirectoryLoader, PythonLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
 from dataclasses import dataclass
 import os
 from .template import SOCIAL_MEDIA_TEMPLATE
@@ -41,7 +40,7 @@ class Agent:
         self.llm = OllamaLLM(
             model=self.config.model_name,
         )
-
+        self.conversation = Null 
         self.vector_store = InMemoryVectorStore(self.embeddings) 
         self.prompt = template
         self.State = State
@@ -117,6 +116,10 @@ class Agent:
         graph = self.create_graph()
         response = graph.invoke({"question": question})
         return response["answer"]
+    
+    def new_chat(self):
+        self.conversation = 
+
 
 
 if __name__ == "__main__":

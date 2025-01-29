@@ -49,7 +49,6 @@ class SanctuaryPlugin(object):
             self.nvim.command('startinsert!')
 
     def handle_input(self, input_text : str):
-        response = self.agent.ask_question(input_text)
+        response = self.agent.ask_question(input_text)        
         lines = response.split('\n')
         return lines
-

@@ -2,6 +2,7 @@
 langgraph 
 langchain-ollama
 langchain-community
+langchain-deepseek-official
 langchain
 pydantic
 faiss-cpu

@@ -10,3 +10,4 @@ The main premise behind this plugin is to ask quick questions about your notes o
 ## Notice
 
 This is a hobby project and I'm still figuring stuff out so have patience.
+....
